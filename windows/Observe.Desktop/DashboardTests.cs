@@ -39,18 +39,34 @@ public static class DashboardTests
                 await Test("UVM table, mod details, offline coverage and untrusted text render locally",async()=>
                 {
                     await Request(form,"cities-mod-enable");
-                    form.SetModTestSnapshot(JsonSerializer.SerializeToElement(new{schema=1,session="fixture",generated_at=DateTimeOffset.UtcNow.ToString("O"),scan_at=DateTimeOffset.UtcNow.ToString("O"),pid=42,process_start=DateTimeOffset.UtcNow.AddMinutes(-1).ToString("O"),image=@"C:\Fixture\Cities2.exe",receipts=Array.Empty<object>(),mods=new[]{new{key="fixture-mod",name="TEST <img src=x onerror=alert(1)> Mod",version="1.0",loaded=true,availability="Loaded in this game process",folder="fixture",path=@"C:\Fixture\Mods",description="LOCAL TEST FIXTURE",build=new{status="UNKNOWN",reason="No matching evidence",verified_by=Array.Empty<string>()},capabilities=new[]{new{category="network",api="System.Net.Http.HttpClient.SendAsync",caller="Fixture.Run",assembly="Fixture.dll"}},modules=new[]{new{name="Fixture",path=@"C:\Fixture\Mods\Fixture.dll",state="Loaded"}}}}}));
+                    form.SetModTestSnapshot(JsonSerializer.SerializeToElement(new{schema=1,session="fixture",generated_at=DateTimeOffset.UtcNow.ToString("O"),scan_at=DateTimeOffset.UtcNow.ToString("O"),pid=42,process_start=DateTimeOffset.UtcNow.AddMinutes(-1).ToString("O"),image=@"C:\Fixture\Cities2.exe",receipts=Array.Empty<object>(),mods=new[]{new{key="fixture-mod",mod_id="128566",name="TEST <img src=x onerror=alert(1)> Mod",version="1.0",loaded=true,availability="Loaded in this game process",folder="fixture",path=@"C:\Fixture\Mods",description="LOCAL TEST FIXTURE",build=new{status="UNKNOWN",reason="No matching evidence",verified_by=Array.Empty<string>()},capabilities=new[]{new{category="network",api="System.Net.Http.HttpClient.SendAsync",caller="Fixture.Run",assembly="Fixture.dll"}},modules=new[]{new{name="Fixture",path=@"C:\Fixture\Mods\Fixture.dll",state="Loaded"}}}}}));
                     await form.Script("go('mods')");await Wait(form,"modsData?.inventory?.mods?.length===1&&document.querySelector('#mod-rows')?.textContent.includes('Fixture')===false&&document.querySelector('[data-mod-key]')!==null");
                     Check(await form.Script("document.querySelector('#mod-connection').textContent.includes('connected')&&!document.querySelector('#mod-rows img')&&document.querySelector('#mod-rows').textContent.includes('<img')") == "true","Markup executed or table missing");
                     await form.CapturePreview(Path.Combine(artifacts,"uvm-mod-table-fixture.png"));
+                    await form.Script("document.querySelector('[data-mod-inform]').click()");
+                    Check(await form.Script("document.querySelector('.mod-request textarea').value.includes('not a security audit')&&document.querySelector('[data-mod-inform]').getAttribute('aria-expanded')==='true'&&document.querySelectorAll('.mod-request img').length===0")=="true","Request missing or untrusted mod name became markup");
+                    await form.Script("renderMods()");
+                    Check(await form.Script("!!document.querySelector('.mod-request textarea')")=="true","Refresh collapsed the request");
+                    await form.Script("document.querySelector('[data-mod-copy]').click()");
+                    for(var tries=0;tries<40&&form.TestClipboard.Length==0;tries++)await Task.Delay(50);
+                    Check(form.TestClipboard.Contains("uvm.json")&&!form.TestClipboard.Contains(@"C:\Fixture"),"Clipboard request missing or leaked a local path");
+                    await form.Script("document.querySelector('[data-mod-goto]').click()");
+                    for(var tries=0;tries<40&&form.TestOpenedModPage.Length==0;tries++)await Task.Delay(50);
+                    Check(form.TestOpenedModPage=="https://mods.paradoxplaza.com/mods/128566/Windows","Wrong destination");
+                    await form.Script("document.querySelector('.mod-request').scrollIntoView({block:'start'})");
+                    await form.CapturePreview(Path.Combine(artifacts,"inform-modder-fixture.png"));
+                    await form.Script("window.scrollTo(0,0)");
+                    await form.Script("document.querySelector('[data-mod-inform]').click()");
+
                     await form.Script("document.querySelector('[data-mod-key]').click()");await Wait(form,"document.querySelector('#modal-body')?.textContent.includes('System.Net.Http.HttpClient.SendAsync')");
                     Check(await form.Script("document.querySelector('#modal-body').textContent.includes('not per-mod attribution')&&document.querySelector('#modal-body').textContent.includes('AI alignment assessment is not implemented')") == "true","Evidence boundary missing");
                     await form.CapturePreview(Path.Combine(artifacts,"uvm-mod-detail-fixture.png"));
                     await form.Script("document.querySelector('[data-action=close-modal]').click()");
-                    await form.Script("window.modFixture=modsData.inventory.mods[0];modsData.inventory.mods=[{...modFixture,is_code:true},{...modFixture,key:'asset',name:'Asset pack',is_code:false,loaded:false}];renderMods()");
+                    await form.Script("window.modFixture=modsData.inventory.mods[0];modsData.inventory.mods=[{...modFixture,is_code:true},{...modFixture,key:'asset',mod_id:'',name:'Asset pack',is_code:false,loaded:false}];renderMods()");
                     Check(await form.Script("modCodeOnly&&document.querySelectorAll('[data-mod-key]').length===1")=="true","Default code filter included assets or excluded no-API code");
                     await form.Script("document.querySelector('#mod-code-only').click()");await Wait(form,"!modFilterSaving");
                     Check(await form.Script("document.querySelectorAll('[data-mod-key]').length===2")=="true","All-mod filter did not restore asset package");
+                    Check(await form.Script("document.querySelectorAll('[data-mod-inform]').length===1")=="true","Local package got a fabricated Paradox link");
                     await form.Script("document.querySelector('#mod-loaded-only').click()");await Wait(form,"!modFilterSaving");
                     Check(await form.Script("document.querySelectorAll('[data-mod-key]').length===1")=="true","Loaded-only filter included an unloaded package");
                     await form.Script("modCodeOnly=true;modLoadedOnly=false;");

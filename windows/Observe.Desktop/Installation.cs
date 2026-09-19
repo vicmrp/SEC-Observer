@@ -7,7 +7,7 @@ namespace Observe;
 public sealed class InstallReceipt
 {
     public string Product {get;set;}="Observe";
-    public string Version {get;set;}="0.11.0-beta-vibe-coded";
+    public string Version {get;set;}="0.12.0-beta-vibe-coded";
     public List<string> Files {get;set;}=[];
 }
 public static class Installation
@@ -49,7 +49,7 @@ public static class Installation
         var executable=Path.Combine(InstallRoot,"Observe.exe");
         using(var key=Registry.CurrentUser.CreateSubKey(UninstallKey))
         {
-            key.SetValue("DisplayName","Observe");key.SetValue("DisplayVersion","0.11.0-beta-vibe-coded");key.SetValue("Publisher","Observe open source");key.SetValue("InstallLocation",InstallRoot);key.SetValue("DisplayIcon",executable);
+            key.SetValue("DisplayName","Observe");key.SetValue("DisplayVersion","0.12.0-beta-vibe-coded");key.SetValue("Publisher","Observe open source");key.SetValue("InstallLocation",InstallRoot);key.SetValue("DisplayIcon",executable);
             key.SetValue("UninstallString",'"'+executable+"\" --uninstall");key.SetValue("NoModify",1);key.SetValue("NoRepair",1);
         }
         var shellType=Type.GetTypeFromProgID("WScript.Shell")??throw new InvalidOperationException("Windows shortcut support is unavailable.");

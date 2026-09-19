@@ -1,4 +1,4 @@
-# Observe integration (UVM 0.5.0 / Observe 0.11.0-beta-vibe-coded)
+# Observe integration (UVM 0.5.0 / Observe 0.12.0-beta-vibe-coded)
 
 In the game, open **Options → Unified Verified Mods → Scan**. The connection is enabled by default and reconnects automatically. An explicit opt-out remains respected. In Observe, enable **Cities II mod observer** under **Plugins**, then open **Cities II mods**. The green connection check means a recent local exchange succeeded; it expires after 12 seconds without another exchange.
 
@@ -44,3 +44,7 @@ Categories are `file`, `network`, `process`, and `lifecycle`. UVM derives the ca
 For assemblies Unity loads from bytes, the file location is empty. Receipts also carry the assembly's full name and module ID (MVID), so Observe can associate them with the corresponding game-reported module without guessing from its name alone.
 
 The protocol source is `Shared/ObserveProtocol.cs` in UVM and `windows/Observe.Desktop/ObserveProtocol.cs` in Observe. Keep these identical when changing the protocol. Increment its schema and pipe name for incompatible changes.
+
+## Invite a mod author
+
+In Cities II mods, select **Inform the modder** next to a Paradox package. Review the expandable guide and use **Copy request**, then **Go to mod on Paradox**. Paste it yourself in the author’s comments if appropriate; avoid duplicate requests. Observe never posts it for you and includes no paths, activity logs or personal data. Local packages without a Paradox ID do not have this action.

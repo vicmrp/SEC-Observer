@@ -128,7 +128,7 @@ public sealed class ObservationEngine : IAsyncDisposable
         {
             var now=DateTimeOffset.UtcNow;using var process=Process.GetCurrentProcess();var cfg=plugins.Load();
             if(!gaming&&(now-sessionsChecked).TotalSeconds>10){powerShellSessionWarnings=SensorSetup.PowerShellSessionWarnings();sessionsChecked=now;}
-            return new{version="0.11.0-beta-vibe-coded",machine=Environment.MachineName,administrator=SensorSetup.IsAdministrator,notice=Notice,gaming,tracking=Launches.Recording,recording=capture is not null,captureStart=capture?.Start,captureEnd=capture is null?(DateTimeOffset?)null:deadline,canaryAlert=live.LastOrDefault(e=>e.EventId==CanaryLab.ReadEvent),
+            return new{version="0.12.0-beta-vibe-coded",machine=Environment.MachineName,administrator=SensorSetup.IsAdministrator,notice=Notice,gaming,tracking=Launches.Recording,recording=capture is not null,captureStart=capture?.Start,captureEnd=capture is null?(DateTimeOffset?)null:deadline,canaryAlert=live.LastOrDefault(e=>e.EventId==CanaryLab.ReadEvent),
                 metrics=new{events=live.Count,network=live.Count(e=>e.IsNetwork),scripts=live.Count(e=>e.EventId==4104),signals=Evidence.Detect(live).Count,ramMb=process.WorkingSet64/1024/1024},
                 pulse=Enumerable.Range(0,30).Select(i=>live.Count(e=>e.IsNetwork&&e.Timestamp>=now.AddSeconds((i-30)*2)&&e.Timestamp<now.AddSeconds((i-29)*2))).ToArray(),
                 events=ActivityRetention.Rows(live),activity=new{scripts=ActivityRetention.Rows(live,"scripts"),process=ActivityRetention.Rows(live,"process"),network=ActivityRetention.Rows(live,"network")},network=NetworkView.Rows(live).ToArray(),

@@ -1,8 +1,8 @@
 # Observe
 
-**v0.11.0-beta-vibe-coded** · MIT · Windows x64
+**v0.12.0-beta-vibe-coded** · MIT · Windows x64
 
-[Download the installer](https://github.com/vicmrp/SEC-Observer/releases/tag/v0.11.0-beta-vibe-coded) · [UVM and setup guide](https://vezit.net#observer)
+[Download the installer](https://github.com/vicmrp/SEC-Observer/releases/tag/v0.12.0-beta-vibe-coded) · [UVM and setup guide](https://vezit.net#observer)
 
 The installer starts with no optional plugins selected. Choose Cities II mod observer for a local UVM connection; add Windows forensic logging if you want Sysmon and PowerShell evidence. Sysmon is downloaded from Microsoft and signature-checked. Existing Sysmon rules are reused, never silently replaced. AI, ThreatFox and UniFi require your own credentials after installation. A separate unchecked option starts Observe at sign-in. Updates retain existing plugin configuration.
 
@@ -42,7 +42,7 @@ Example: `I just opened "C:\Games\Example\Game.exe". Please tell me what this pr
 
 The old past-activity investigation interface and its dashboard commands have been removed. Executable matching now follows recorded process GUIDs and descendants, and script questions reuse the existing PowerShell correlation engine. Answers are limited to recorded evidence; missing historical logs cannot be reconstructed.
 
-Run **dist/Observe-Windows-0.11.0-beta-vibe-coded/Observe-Setup.exe** to install, or **Observe.exe** for portable use. Source and future builds live in your repository checkout.
+Run **dist/Observe-Windows-0.12.0-beta-vibe-coded/Observe-Setup.exe** to install, or **Observe.exe** for portable use. Source and future builds live in your repository checkout.
 
 See [Windows instructions, privacy, limits and build steps](windows/README.md). Build with **windows/Build.ps1 -LiveTests**, then **windows/Package-Source.ps1**. The .NET runtime is bundled; WebView2 Runtime is required separately.
 

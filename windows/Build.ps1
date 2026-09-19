@@ -1,4 +1,4 @@
-param([string]$Configuration = 'Release', [string]$ReleaseName = 'Observe-Windows-0.11.0-beta-vibe-coded', [switch]$LiveTests)
+param([string]$Configuration = 'Release', [string]$ReleaseName = 'Observe-Windows-0.12.0-beta-vibe-coded', [switch]$LiveTests)
 $ErrorActionPreference = 'Stop'
 $project = Join-Path $PSScriptRoot 'Observe.Desktop\Observe.Desktop.csproj'
 $repository = Split-Path $PSScriptRoot -Parent

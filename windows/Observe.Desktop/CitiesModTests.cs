@@ -29,6 +29,16 @@ public static class CitiesModTests
             finally{if(Directory.Exists(root))Directory.Delete(root,true);}
         });
         Check("Malformed preferences cannot corrupt persisted filters",()=>{var f=new BridgeFilters("");var before=f.Wire;try{f.Merge("9999999999999999999|oops|1|0");}catch(InvalidDataException){Assert(f.Wire==before,"Preferences changed");return;}throw new Exception("Invalid preferences accepted");});
+        Check("Paradox navigation accepts only inventory IDs and rejects URL injection",()=>
+        {
+            using var bridge=new CitiesModBridge(new PluginStore(Path.Combine(Path.GetTempPath(),"observe-link-fixture")),true);
+            foreach(var id in new[]{"128566","https://example.com","12/../../bad","128566\n",""})
+            {
+                bridge.TestSnapshot(JsonSerializer.SerializeToElement(new{mods=new[]{new{key="fixture",mod_id=id}}}));
+                if(id=="128566")Assert(bridge.ParadoxPage("fixture")=="https://mods.paradoxplaza.com/mods/128566/Windows","Wrong URL");
+                else{try{bridge.ParadoxPage("fixture");}catch(ArgumentException){continue;}throw new Exception("Untrusted URL accepted");}
+            }
+        });
         var moduleId=Guid.NewGuid().ToString("D");
         var module=JsonSerializer.SerializeToElement(new{path=@"C:\Mods\UVM.dll",assembly_name="UVM, Version=0.4.0.0",assembly_mvid=moduleId});
         JsonElement Receipt(string id,string name="UVM, Version=0.4.0.0")=>JsonSerializer.SerializeToElement(new{assembly_path="",assembly_name=name,assembly_mvid=id});

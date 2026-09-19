@@ -18,6 +18,17 @@ public sealed class CitiesModBridge : IDisposable
     DateTimeOffset received;
     string notice="Enable Cities II mod observer and Connect to Observe in UVM.";
     public CitiesModBridge(PluginStore plugins,bool isolated=false){this.plugins=plugins;this.isolated=isolated;filters=new BridgeFilters(Path.Combine(plugins.Root,"uvm-filters.txt"));}
+    public string ParadoxPage(string key)
+    {
+        lock(gate)
+        {
+            if(snapshot is not JsonElement data)throw new InvalidOperationException("No mod inventory available.");
+            var mod=data.GetProperty("mods").EnumerateArray().FirstOrDefault(m=>S(m,"key")==key);
+            var id=mod.ValueKind==JsonValueKind.Object?S(mod,"mod_id"):"";
+            if(!System.Text.RegularExpressions.Regex.IsMatch(id,@"\A[1-9][0-9]{0,18}\z"))throw new ArgumentException("This package has no valid Paradox listing.");
+            return "https://mods.paradoxplaza.com/mods/"+id+"/Windows";
+        }
+    }
     public object FilterView()=>new{codeOnly=filters.CodeOnly,loadedOnly=filters.LoadedOnly};
     public void SetFilters(bool codeOnly,bool loadedOnly){filters.Set(codeOnly,loadedOnly);if(!isolated)_=Refresh();}
     public void Start(){if(!isolated)_ = Task.Run(Pump);}
