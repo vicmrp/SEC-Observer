@@ -11,6 +11,35 @@ public static class CitiesModTests
         void Check(string name,Action action){try{action();checks.Add(new{name,passed=true});}catch(Exception e){failed++;checks.Add(new{name,passed=false,error=e.ToString()});}}
         void Assert(bool condition,string reason){if(!condition)throw new Exception(reason);}
         Check("Unity-compatible SID matches desktop Windows identity",()=>Assert(ObserveProtocol.UserSid==System.Security.Principal.WindowsIdentity.GetCurrent().User!.Value,"Wrong Windows user SID"));
+        Check("Pipe ownership uses the account SID rather than the elevated owner group",()=>
+        {
+            var user=ObserveProtocol.UserSid;
+            UvmPipeConnection.RequireUserOwner(user,user);
+            foreach(var owner in new[]{"S-1-5-32-544","S-1-5-18","S-1-1-0",""})
+            {
+                try{UvmPipeConnection.RequireUserOwner(owner,user);}
+                catch(UnauthorizedAccessException){continue;}
+                throw new Exception("Another identity was accepted as this user");
+            }
+        });
+        try
+        {
+            var name="Observe-test-"+Guid.NewGuid().ToString("N");
+            var acl=new System.IO.Pipes.PipeSecurity();
+            var user=new System.Security.Principal.SecurityIdentifier(ObserveProtocol.UserSid);
+            acl.SetOwner(user);acl.SetAccessRuleProtection(true,false);
+            acl.AddAccessRule(new System.IO.Pipes.PipeAccessRule(user,System.IO.Pipes.PipeAccessRights.FullControl,System.Security.AccessControl.AccessControlType.Allow));
+            using var server=System.IO.Pipes.NamedPipeServerStreamAcl.Create(name,System.IO.Pipes.PipeDirection.InOut,1,System.IO.Pipes.PipeTransmissionMode.Byte,System.IO.Pipes.PipeOptions.Asynchronous,4096,4096,acl);
+            using var timeout=new CancellationTokenSource(5000);
+            var accept=server.WaitForConnectionAsync(timeout.Token);
+            using var client=UvmPipeConnection.Create(name);
+            await client.ConnectAsync(timeout.Token);await accept;
+            UvmPipeConnection.VerifyOwner(client);
+            await ObserveProtocol.Write(client,"same user",timeout.Token);
+            var message=await ObserveProtocol.Read(server,128,timeout.Token);
+            Check("Real user-owned pipe connects and exchanges data across token owner modes",()=>Assert(message=="same user","IPC failed"));
+        }
+        catch(Exception e){Check("Real user-owned pipe connects and exchanges data across token owner modes",()=>throw new Exception("Pipe ownership regression",e));}
         Check("Fresh installer selects no plugins or logging dependencies",()=>{var s=new InstallSelection();var p=new PluginSettings();s.Apply(p);Assert(!p.CitiesModObserver&&!p.Observer&&!p.Unifi&&!p.ThreatFox&&s.Dependencies.Length==0&&!s.StartAtLogin,"Unexpected default integration");});
         Check("Cities integration does not require a driver or credentials",()=>{var s=new InstallSelection{Cities=true};s.Validate();var p=new PluginSettings();s.Apply(p);Assert(p.CitiesModObserver&&s.Dependencies.Length==0&&p.OpenAiKey=="","Unnecessary dependency");});
         Check("Logging selection requires explicit license acceptance",()=>{try{new InstallSelection{WindowsLogging=true}.Validate();}catch(InvalidOperationException){return;}throw new Exception("License acceptance bypassed");});

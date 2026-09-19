@@ -51,8 +51,9 @@ public sealed class CitiesModBridge : IDisposable
         {
             if(!plugins.Load().CitiesModObserver){Disconnect("Cities II mod observer is disabled.");return;}
             using var timeout=CancellationTokenSource.CreateLinkedTokenSource(stop.Token);timeout.CancelAfter(2500);
-            using var pipe=new NamedPipeClientStream(".",ObserveProtocol.PipeName,PipeDirection.InOut,PipeOptions.Asynchronous|PipeOptions.CurrentUserOnly);
+            using var pipe=UvmPipeConnection.Create(ObserveProtocol.PipeName);
             await pipe.ConnectAsync(750,timeout.Token);
+            UvmPipeConnection.VerifyOwner(pipe);
             if(!ObserveProtocol.GetNamedPipeServerProcessId(pipe.SafePipeHandle,out var pid))throw new IOException("Cannot identify UVM's game process.");
             using var game=Process.GetProcessById((int)pid);
             if(!game.ProcessName.Equals("Cities2",StringComparison.OrdinalIgnoreCase))throw new IOException("The bridge endpoint is not Cities2.exe.");

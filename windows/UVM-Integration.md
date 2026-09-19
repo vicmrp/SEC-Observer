@@ -1,4 +1,4 @@
-# Observe integration (UVM 0.5.0 / Observe 0.12.0-beta-vibe-coded)
+# Observe integration (UVM 0.5.0 / Observe 0.12.1-beta-vibe-coded)
 
 In the game, open **Options → Unified Verified Mods → Scan**. The connection is enabled by default and reconnects automatically. An explicit opt-out remains respected. In Observe, enable **Cities II mod observer** under **Plugins**, then open **Cities II mods**. The green connection check means a recent local exchange succeeded; it expires after 12 seconds without another exchange.
 
@@ -48,3 +48,7 @@ The protocol source is `Shared/ObserveProtocol.cs` in UVM and `windows/Observe.D
 ## Invite a mod author
 
 In Cities II mods, select **Inform the modder** next to a Paradox package. Review the expandable guide and use **Copy request**, then **Go to mod on Paradox**. Paste it yourself in the author’s comments if appropriate; avoid duplicate requests. Observe never posts it for you and includes no paths, activity logs or personal data. Local packages without a Paradox ID do not have this action.
+
+## Administrator mode
+
+Observe 0.12.1 can connect when Observe runs as administrator and Cities II runs normally under the same Windows account. The client verifies the pipe owner's actual user SID before exchanging data and does not allow the game to impersonate Observe. No game restart or different UVM package is needed for this fix. Other Windows users remain excluded.

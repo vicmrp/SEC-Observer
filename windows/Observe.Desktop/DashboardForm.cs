@@ -40,7 +40,7 @@ public sealed class DashboardForm : Form
         plugins=testRoot is null?new():new(Path.Combine(testRoot,"settings"),Path.Combine(testRoot,"config.toml"));engine=new(plugins,testRoot is null?null:Path.Combine(testRoot,"sessions"));
         chats=new(Path.Combine(plugins.Root,"observer-chats"));observer=new(plugins,chats);
         threatFox=new(plugins);try{var map=Path.Combine(plugins.Root,"countries.csv");if(File.Exists(map))countries=new(File.ReadAllText(map));}catch(Exception e){Debug.WriteLine(e.Message);}
-        Text=mode=="install"?"Install Observe":mode=="uninstall"?"Uninstall Observe":"Observe · 0.12.0-beta-vibe-coded";AutoScaleMode=AutoScaleMode.Dpi;AutoScaleDimensions=new(96,96);Size=new(1440,950);MinimumSize=new(1060,720);StartPosition=FormStartPosition.CenterScreen;
+        Text=mode=="install"?"Install Observe":mode=="uninstall"?"Uninstall Observe":"Observe · 0.12.1-beta-vibe-coded";AutoScaleMode=AutoScaleMode.Dpi;AutoScaleDimensions=new(96,96);Size=new(1440,950);MinimumSize=new(1060,720);StartPosition=FormStartPosition.CenterScreen;
         Controls.Add(web);Shown+=async(_,_)=>await Initialize();timer.Tick+=(_,_)=>Push();FormClosing+=OnClosing;
         canaryNotification.BalloonTipClicked+=async(_,_)=>{Show();WindowState=FormWindowState.Normal;Activate();if(ready)await Script("go('canary')");};
     }
