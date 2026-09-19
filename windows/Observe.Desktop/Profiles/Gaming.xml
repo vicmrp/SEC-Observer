@@ -1,0 +1,12 @@
+<Sysmon schemaversion="4.82">
+  <HashAlgorithms>sha256</HashAlgorithms><DnsLookup>False</DnsLookup>
+  <EventFiltering><RuleGroup name="Observe performance" groupRelation="or">
+    <ProcessCreate onmatch="exclude"/><ProcessTerminate onmatch="include"/>
+    <NetworkConnect onmatch="exclude"/><DnsQuery onmatch="exclude"/>
+    <ProcessTampering onmatch="exclude"/>
+    <FileCreate onmatch="include"><TargetFilename condition="contains">\Start Menu\Programs\Startup\</TargetFilename></FileCreate>
+    <RegistryEvent onmatch="include"><TargetObject condition="contains">\CurrentVersion\Run</TargetObject></RegistryEvent>
+    <CreateRemoteThread onmatch="include"/><ProcessAccess onmatch="include"/><WmiEvent onmatch="include"/>
+    <ImageLoad onmatch="include"/><FileDelete onmatch="include"/><FileDeleteDetected onmatch="include"/><ClipboardChange onmatch="include"/>
+  </RuleGroup></EventFiltering>
+</Sysmon>

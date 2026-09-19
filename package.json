@@ -1,0 +1,15 @@
+{
+  "name": "observe-security",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local Windows event observation with evidence-based Astra analysis",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "gateway": "node gateway.mjs",
+    "check": "node --check server.mjs && node --check gateway.mjs && node --check public/app.js"
+  }
+}

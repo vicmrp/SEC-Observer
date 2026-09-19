@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework><LangVersion>latest</LangVersion>
+    <AssemblyName>Observe.CanaryMod</AssemblyName><Version>0.9.1</Version><Deterministic>true</Deterministic><ContinuousIntegrationBuild>true</ContinuousIntegrationBuild><PathMap>$(MSBuildProjectDirectory)/../..=/_/source</PathMap>
+    <GameManagedPath Condition="'$(GameManagedPath)'==''">$(MSBuildProgramFiles32)/Steam/steamapps/common/Cities Skylines II/Cities2_Data/Managed</GameManagedPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Game"><HintPath>$(GameManagedPath)/Game.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Colossal.IO.AssetDatabase"><HintPath>$(GameManagedPath)/Colossal.IO.AssetDatabase.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Colossal.Logging"><HintPath>$(GameManagedPath)/Colossal.Logging.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameManagedPath)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+</Project>
